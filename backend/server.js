@@ -1,6 +1,7 @@
 const express  = require('express');
 const mongoose = require('mongoose');
 const cors     = require('cors');
+const path     = require('path'); // Add this for serving static files
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +16,69 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/slots',    require('./routes/slots'));
 app.use('/api/payment',  require('./routes/payment'));
 app.use('/api/admin',    require('./routes/admin'));
+
+// ===== ADD THIS - Root API endpoint =====
+app.get('/api', (req, res) => {
+  res.json({
+    message: 'Service Booking API is running',
+    status: 'active',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      services: '/api/services',
+      bookings: '/api/bookings',
+      slots: '/api/slots',
+      payment: '/api/payment',
+      admin: '/api/admin'
+    }
+  });
+});
+
+// ===== ADD THIS - Handle root route =====
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to Service Booking API',
+    status: 'active',
+    documentation: 'Use /api endpoints for API calls'
+  });
+});
+
+// ===== ADD THIS - For production deployment (serving React frontend) =====
+// Check if we're in production and frontend build exists
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React frontend
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  
+  // Handle any requests that don't match API routes
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+  });
+} else {
+  // Development - handle 404 for unknown routes
+  app.get('*', (req, res) => {
+    res.status(404).json({
+      error: 'Route not found',
+      message: 'This is an API server. Please use /api endpoints.',
+      availableEndpoints: [
+        '/api/auth',
+        '/api/services',
+        '/api/bookings',
+        '/api/slots',
+        '/api/payment',
+        '/api/admin'
+      ]
+    });
+  });
+}
+
+// Error handling middleware (optional but recommended)
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: err.message 
+  });
+});
 
 // Seed default services on first run
 async function seedServices() {

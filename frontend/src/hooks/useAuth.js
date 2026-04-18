@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { createContext, createElement, useContext, useState } from 'react'
 
-export function useAuth() {
+const AuthContext = createContext(null)
+
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('user')) || null
@@ -19,5 +21,17 @@ export function useAuth() {
     setUser(null)
   }
 
-  return { user, login, logout }
+  return createElement(
+    AuthContext.Provider,
+    { value: { user, login, logout } },
+    children
+  )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
 }
