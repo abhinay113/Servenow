@@ -5,7 +5,7 @@ import { fmt } from '../utils/helpers'
 import toast from 'react-hot-toast'
 
 export default function CheckoutPage() {
-  const { state } = useLocation()
+  const location = useLocation()
   const navigate = useNavigate()
 
   const [couponCode, setCouponCode] = useState('')
@@ -14,13 +14,17 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState('')
   const [payLoading, setPayLoading] = useState(false)
 
-  if (!state?.service) {
+  const routeState = location.state
+  const sessionState = typeof window !== 'undefined' ? JSON.parse(window.sessionStorage.getItem('serveNowCheckout') || 'null') : null
+  const checkoutState = routeState?.service ? routeState : sessionState
+
+  if (!checkoutState?.service) {
     navigate('/services')
     return null
   }
 
   const { service, date, timeSlot, address, city,
-    pincode, notes, userId, userName, userPhone } = state
+    pincode, notes, userId, userName, userPhone } = checkoutState
 
   // Handle both 'time' and 'timeSlot' for backward compatibility
   const finalTimeSlot = timeSlot || state.time
@@ -129,6 +133,7 @@ export default function CheckoutPage() {
               toast.success('Payment successful! Booking confirmed.')
               console.log('Saving booking data to sessionStorage and navigating...')
               window.sessionStorage.setItem('serveNowBooking', JSON.stringify(verify.data.booking))
+              window.sessionStorage.removeItem('serveNowCheckout')
               navigate('/confirmation', {
                 state: { booking: verify.data.booking }
               })

@@ -54,22 +54,24 @@ export default function BookingPage() {
     if (!form.pincode) return toast.error('Please enter your pincode')
     if (!/^\d{6}$/.test(form.pincode)) return toast.error('Enter a valid 6-digit pincode')
 
+    const checkoutState = {
+      service,
+      date,
+      time: selectedSlot,
+      address: form.address,
+      city: form.city,
+      pincode: form.pincode,
+      notes: form.notes,
+      userId: user._id,
+      userName: user.name,
+      userPhone: user.phone,
+      totalPrice: service.price
+    }
+
+    window.sessionStorage.setItem('serveNowCheckout', JSON.stringify(checkoutState))
+
     // Navigate to CheckoutPage with all data
-    navigate('/checkout', {
-      state: {
-        service,
-        date,
-        time: selectedSlot,
-        address: form.address,
-        city: form.city,
-        pincode: form.pincode,
-        notes: form.notes,
-        userId: user._id,
-        userName: user.name,
-        userPhone: user.phone,
-        totalPrice: service.price
-      }
-    })
+    navigate('/checkout', { state: checkoutState })
   }
 
   const bookingData = {
