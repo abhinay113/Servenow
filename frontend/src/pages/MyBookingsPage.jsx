@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '../contexts/AuthContext'
 import { fmt, formatTime, STATUS_COLORS, CATEGORY_ICONS } from '../utils/helpers'
 
 export default function MyBookingsPage() {
@@ -239,7 +239,7 @@ export default function MyBookingsPage() {
                       )}
                       <button 
                         className="action-btn view"
-                        onClick={() => navigate(`/confirmation/${booking._id}`)}
+                        onClick={() => navigate('/confirmation', { state: { booking } })}
                       >
                         <svg className="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

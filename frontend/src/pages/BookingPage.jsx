@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../utils/api'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '../contexts/AuthContext'
 import { today, fmt } from '../utils/helpers'
 import BookingSteps from '../components/BookingSteps'
 import SlotPicker from '../components/SlotPicker'
-import PaymentModal from '../components/PaymentModal'
 import toast from 'react-hot-toast'
 
 export default function BookingPage() {
@@ -20,7 +19,6 @@ export default function BookingPage() {
   const [selectedSlot, setSlot] = useState('')
   const [slotsLoading, setSlotsLoading] = useState(false)
   const [form, setForm] = useState({ address: '', city: '', pincode: '', notes: '' })
-  const [showPayment, setShowPayment] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -55,8 +53,23 @@ export default function BookingPage() {
     if (!form.city) return toast.error('Please enter your city')
     if (!form.pincode) return toast.error('Please enter your pincode')
     if (!/^\d{6}$/.test(form.pincode)) return toast.error('Enter a valid 6-digit pincode')
-    setStep(3)
-    setShowPayment(true)
+
+    // Navigate to CheckoutPage with all data
+    navigate('/checkout', {
+      state: {
+        service,
+        date,
+        time: selectedSlot,
+        address: form.address,
+        city: form.city,
+        pincode: form.pincode,
+        notes: form.notes,
+        userId: user._id,
+        userName: user.name,
+        userPhone: user.phone,
+        totalPrice: service.price
+      }
+    })
   }
 
   const bookingData = {
@@ -274,15 +287,6 @@ export default function BookingPage() {
           </div>
         )}
       </div>
-
-      {showPayment && (
-        <PaymentModal
-          booking={bookingData}
-          service={service}
-          onSuccess={(b) => navigate(`/confirmation/${b._id}`)}
-          onClose={() => { setShowPayment(false); setStep(2) }}
-        />
-      )}
 
       <style>{`
         .booking-page {

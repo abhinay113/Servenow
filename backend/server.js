@@ -46,6 +46,11 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check route for Render deployment
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'ServeNow backend' })
+});
+
 // ===== FIXED: Handle 404 for unknown routes (no wildcard *) =====
 // For production - serve React frontend
 if (process.env.NODE_ENV === 'production') {

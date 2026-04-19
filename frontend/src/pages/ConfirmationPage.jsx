@@ -1,32 +1,30 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import api from '../utils/api'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { fmt, formatDate, formatTime } from '../utils/helpers'
+import toast from 'react-hot-toast'
 
 export default function ConfirmationPage() {
-  const { id } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const [booking, setBooking] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchBooking = async () => {
-      try {
-        const response = await api.get(`/bookings/${id}`)
-        setBooking(response.data)
-      } catch (error) {
-        console.error('Failed to fetch booking', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    if (id) {
-      fetchBooking()
+    // Prefer state from navigation, but fall back to session storage after refresh
+    if (location.state?.booking) {
+      console.log('Booking data received from location state:', location.state.booking)
+      setBooking(location.state.booking)
+      setLoading(false)
+      window.sessionStorage.setItem('serveNowBooking', JSON.stringify(location.state.booking))
     } else {
+      const storedBooking = window.sessionStorage.getItem('serveNowBooking')
+      if (storedBooking) {
+        console.log('Booking data loaded from sessionStorage')
+        setBooking(JSON.parse(storedBooking))
+      }
       setLoading(false)
     }
-  }, [id])
+  }, [location.state])
 
   if (loading) {
     return (
@@ -34,6 +32,28 @@ export default function ConfirmationPage() {
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-slate-200 border-t-violet-600 rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-slate-500 text-sm">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!booking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <div className="confirmation-card max-w-xl bg-white rounded-3xl p-8 text-center shadow-lg border border-slate-200">
+          <div className="text-6xl mb-5">⚠️</div>
+          <h1 className="text-2xl font-bold mb-3">Confirmation not found</h1>
+          <p className="text-slate-600 mb-6">
+            We could not retrieve your booking details. If you just completed payment, try refreshing this page once or visit your bookings.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row justify-center">
+            <button onClick={() => navigate('/bookings')} className="btn-primary">
+              View My Bookings
+            </button>
+            <button onClick={() => navigate('/')} className="btn-secondary">
+              Back to Home
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -54,7 +74,7 @@ export default function ConfirmationPage() {
         {/* Booking ID */}
         <div className="booking-id-wrapper">
           <p className="booking-id-label">Booking ID</p>
-          <p className="booking-id-value">{booking?.bookingId || id}</p>
+          <p className="booking-id-value">{booking?._id || booking?.bookingId || 'N/A'}</p>
         </div>
 
         {/* Message */}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '../contexts/AuthContext'
 import { fmt } from '../utils/helpers'
 import AdminBookingTable from '../components/AdminBookingTable'
 import toast from 'react-hot-toast'
@@ -204,23 +204,6 @@ export default function AdminPage() {
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
           <div className="tab-content">
-            <div className="content-header">
-              <h2 className="content-title">Recent Bookings</h2>
-              <div className="content-filters">
-                <select className="filter-select">
-                  <option>All Status</option>
-                  <option>Confirmed</option>
-                  <option>Completed</option>
-                  <option>Cancelled</option>
-                </select>
-                <div className="search-wrapper">
-                  <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <input type="text" placeholder="Search bookings..." className="search-input" />
-                </div>
-              </div>
-            </div>
             <AdminBookingTable bookings={bookings} onUpdate={fetchAll} />
           </div>
         )}

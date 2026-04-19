@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const backendUrl = import.meta.env.VITE_API_URL || '/api'
 const api = axios.create({
-  baseURL: "https://servnow-s9a0.onrender.com/api"
+  baseURL: backendUrl,
+  headers: { 'Content-Type': 'application/json' }
 })
 
 api.interceptors.request.use((config) => {

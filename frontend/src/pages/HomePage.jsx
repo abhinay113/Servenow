@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../utils/api'
 import ServiceCard from '../components/ServiceCard'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function HomePage() {
   const [services, setServices] = useState([])
   const [stats, setStats] = useState({ bookings: 0, experts: 0, customers: 0 })
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   useEffect(() => {
     api.get('/services').then(r => setServices(r.data.slice(0, 3)))
@@ -188,22 +190,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-container">
-          <div className="cta-content">
-            <h2 className="cta-title">Ready to book your service?</h2>
-            <p className="cta-description">Join thousands of happy customers who trust ServeNow</p>
-            <button onClick={() => navigate('/services')} className="cta-button">
-              Get Started Now
-              <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
+      {/* CTA Section - Only show when user is logged out */}
+      {!user && (
+        <section className="cta-section">
+          <div className="cta-container">
+            <div className="cta-content">
+              <h2 className="cta-title">Ready to book your service?</h2>
+              <p className="cta-description">Join thousands of happy customers who trust ServeNow</p>
+              <button 
+                type="button"
+                onClick={() => navigate('/login')} 
+                className="cta-button"
+              >
+                Get Started Now
+                <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </div>
+            <div className="cta-bg-animation"></div>
           </div>
-          <div className="cta-bg-animation"></div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <style>{`
         .homepage {
@@ -644,6 +652,11 @@ export default function HomePage() {
           padding: 3rem;
           background: rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
+        }
+
+        .cta-content {
+          position: relative;
+          z-index: 10;
         }
 
         .cta-bg-animation {
