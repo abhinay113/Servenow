@@ -110,6 +110,11 @@ async function seedServices() {
   console.log('✅ Services seeded');
 }
 
+if (!process.env.MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not set. Please configure it in .env or environment variables.');
+  process.exit(1);
+}
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log('✅ MongoDB connected');
