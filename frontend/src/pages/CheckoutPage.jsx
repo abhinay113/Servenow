@@ -27,7 +27,7 @@ export default function CheckoutPage() {
     pincode, notes, userId, userName, userPhone } = checkoutState
 
   // Handle both 'time' and 'timeSlot' for backward compatibility
-  const finalTimeSlot = timeSlot || state.time
+  const finalTimeSlot = timeSlot || checkoutState.time
 
   const originalAmount = service.price
   const discount = coupon?.discount || 0
