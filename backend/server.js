@@ -52,44 +52,14 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'ServeNow backend' })
 });
 
-// ===== FIXED: Handle 404 for unknown routes (no wildcard *) =====
-// For production - serve React frontend
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the React frontend
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  
-  // Handle React routing - send to index.html for any non-API route
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return next();
-    }
-    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+// ===== API-Only Server (Backend and Frontend deployed separately) =====
+// Handle non-API routes in all environments
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    message: 'This is an API server. Please use /api endpoints.'
   });
-} else {
-  // Development - handle 404 for unknown API routes
-  // app.use('/api/*', (req, res) => {
-  //   res.status(404).json({
-  //     error: 'API endpoint not found',
-  //     message: 'Please check your API endpoint URL',
-  //     availableEndpoints: [
-  //       '/api/auth',
-  //       '/api/services',
-  //       '/api/bookings',
-  //       '/api/slots',
-  //       '/api/payment',
-  //       '/api/admin'
-  //     ]
-  //   });
-  // });
-  
-  // Handle non-API routes in development
-  app.use((req, res) => {
-    res.status(404).json({
-      error: 'Route not found',
-      message: 'This is an API server. Please use /api endpoints.'
-    });
-  });
-}
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

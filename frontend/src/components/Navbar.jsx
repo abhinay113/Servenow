@@ -230,11 +230,22 @@ export default function Navbar() {
           align-items: center;
           justify-content: center;
           transition: all 0.3s ease;
+          animation: glowPulse 2s ease-in-out infinite;
         }
 
         .logo-icon:hover {
           transform: scale(1.05);
+          animation: none;
           box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes glowPulse {
+          0%, 100% {
+            box-shadow: 0 0px 8px rgba(102, 126, 234, 0.2);
+          }
+          50% {
+            box-shadow: 0 0px 16px rgba(102, 126, 234, 0.5);
+          }
         }
 
         .logo-emoji {
@@ -243,27 +254,7 @@ export default function Navbar() {
         }
 
         .logo-pulse {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 100%;
-          height: 100%;
-          background: rgba(102, 126, 234, 0.4);
-          border-radius: 12px;
-          animation: pulse 2s infinite;
-          pointer-events: none;
-        }
-
-        @keyframes pulse {
-          0% {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 0.5;
-          }
-          100% {
-            transform: translate(-50%, -50%) scale(1.5);
-            opacity: 0;
-          }
+          display: none;
         }
 
         .logo-text {

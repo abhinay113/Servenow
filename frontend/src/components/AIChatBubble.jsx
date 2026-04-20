@@ -9,6 +9,7 @@ const SUGGESTED = [
 ]
 
 export default function AIChatBubble() {
+  const [isVisible, setIsVisible] = useState(false)
   const [open, setOpen]       = useState(false)
   const [messages, setMessages] = useState([
     {
@@ -28,6 +29,18 @@ export default function AIChatBubble() {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [open])
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Alt + A to toggle AI bubble visibility
+      if (e.altKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault()
+        setIsVisible(prev => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -82,7 +95,7 @@ export default function AIChatBubble() {
 
           {/* Header */}
           <div style={{
-            background: 'linear-gradient(135deg,#667eea,#764ba2)',
+            background: 'linear-gradient(135deg,#14b8a6,#06b6d4)',
             padding: '16px 20px',
             display: 'flex', alignItems: 'center',
             justifyContent: 'space-between'
@@ -130,7 +143,7 @@ export default function AIChatBubble() {
                 {m.role === 'assistant' && (
                   <div style={{
                     width: 28, height: 28, borderRadius: '50%',
-                    background: 'linear-gradient(135deg,#667eea,#764ba2)',
+                    background: 'linear-gradient(135deg,#14b8a6,#06b6d4)',
                     display: 'flex', alignItems: 'center',
                     justifyContent: 'center', fontSize: 14,
                     marginRight: 8, flexShrink: 0, alignSelf: 'flex-end'
@@ -143,7 +156,7 @@ export default function AIChatBubble() {
                     ? '18px 18px 4px 18px'
                     : '18px 18px 18px 4px',
                   background: m.role === 'user'
-                    ? 'linear-gradient(135deg,#667eea,#764ba2)'
+                    ? 'linear-gradient(135deg,#14b8a6,#06b6d4)'
                     : '#f1f5f9',
                   color: m.role === 'user' ? 'white' : '#1e293b',
                   fontSize: 14, lineHeight: 1.5
@@ -158,7 +171,7 @@ export default function AIChatBubble() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
-                  background: 'linear-gradient(135deg,#667eea,#764ba2)',
+                  background: 'linear-gradient(135deg,#14b8a6,#06b6d4)',
                   display: 'flex', alignItems: 'center',
                   justifyContent: 'center', fontSize: 14
                 }}>🤖</div>
@@ -187,11 +200,11 @@ export default function AIChatBubble() {
                   <button key={q} onClick={() => sendMessage(q)} style={{
                     background: 'white', border: '1.5px solid #e2e8f0',
                     borderRadius: 12, padding: '8px 12px',
-                    fontSize: 13, color: '#667eea', cursor: 'pointer',
+                    fontSize: 13, color: '#14b8a6', cursor: 'pointer',
                     textAlign: 'left', transition: 'all .15s',
                     fontWeight: 500
                   }}
-                  onMouseEnter={e => e.target.style.borderColor = '#667eea'}
+                  onMouseEnter={e => e.target.style.borderColor = '#14b8a6'}
                   onMouseLeave={e => e.target.style.borderColor = '#e2e8f0'}>
                     {q}
                   </button>
@@ -222,7 +235,7 @@ export default function AIChatBubble() {
                 outline: 'none', transition: 'border .2s',
                 background: loading ? '#f8fafc' : 'white'
               }}
-              onFocus={e => e.target.style.borderColor = '#667eea'}
+              onFocus={e => e.target.style.borderColor = '#14b8a6'}
               onBlur={e => e.target.style.borderColor = '#e2e8f0'}
             />
             <button
@@ -231,7 +244,7 @@ export default function AIChatBubble() {
               style={{
                 width: 40, height: 40, borderRadius: '50%',
                 background: input.trim()
-                  ? 'linear-gradient(135deg,#667eea,#764ba2)'
+                  ? 'linear-gradient(135deg,#14b8a6,#06b6d4)'
                   : '#e2e8f0',
                 border: 'none', cursor: input.trim() ? 'pointer' : 'default',
                 display: 'flex', alignItems: 'center',
@@ -246,37 +259,41 @@ export default function AIChatBubble() {
       )}
 
       {/* Floating Bubble Button */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        style={{
-          position: 'fixed', bottom: 24, right: 24,
-          zIndex: 1001,
-          width: 58, height: 58, borderRadius: '50%',
-          background: 'linear-gradient(135deg,#667eea,#764ba2)',
-          border: 'none', cursor: 'pointer',
-          boxShadow: '0 8px 24px rgba(102,126,234,0.4)',
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontSize: 24,
-          transition: 'transform .2s',
-          transform: open ? 'rotate(0deg)' : 'rotate(0deg)'
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-      >
-        {open ? '✕' : '🤖'}
+      {isVisible && (
+        <button
+          onClick={() => setOpen(o => !o)}
+          style={{
+            position: 'fixed', bottom: 24, right: 24,
+            zIndex: 1001,
+            width: 58, height: 58, borderRadius: '50%',
+              background: 'linear-gradient(135deg,#14b8a6,#06b6d4)',
+              border: 'none', cursor: 'pointer',
+              boxShadow: '0 8px 24px rgba(20,184,166,0.4)',
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: 24,
+            transition: 'transform .2s',
+            transform: open ? 'rotate(0deg)' : 'rotate(0deg)'
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          {open ? '✕' : '🤖'}
 
-        {/* Unread badge */}
-        {!open && unread > 0 && (
-          <div style={{
-            position: 'absolute', top: 0, right: 0,
-            width: 20, height: 20, borderRadius: '50%',
-            background: '#ef4444', color: 'white',
-            fontSize: 11, fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '2px solid white'
-          }}>{unread}</div>
-        )}
-      </button>
+          {/* Unread badge */}
+          {!open && unread > 0 && (
+            <div style={{
+              position: 'absolute', top: 0, right: 0,
+              width: 20, height: 20, borderRadius: '50%',
+              background: '#ef4444', color: 'white',
+              fontSize: 11, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '2px solid white'
+            }}>{unread}</div>
+          )}
+        </button>
+      )}
+
+      {/* Styles for animations */}
 
       <style>{`
         @keyframes slideUp {
