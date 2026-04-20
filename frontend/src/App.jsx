@@ -10,6 +10,7 @@ import MyBookingsPage    from './pages/MyBookingsPage'
 import LoginPage         from './pages/LoginPage'
 import AdminPage         from './pages/AdminPage'
 import { AuthProvider } from './hooks/useAuth'
+import AIChatBubble from './components/AIChatBubble'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/login"             element={<LoginPage />} />
           <Route path="/admin"             element={<AdminPage />} />
         </Routes>
+        <AIChatBubble />
       </div>
     </AuthProvider>
   )

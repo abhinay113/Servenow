@@ -19,6 +19,7 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/slots',    require('./routes/slots'));
 app.use('/api/payment',  require('./routes/payment'));
 app.use('/api/admin',    require('./routes/admin'));
+app.use('/api/ai',       require('./routes/ai'));
 
 // Root API endpoint
 app.get('/api', (req, res) => {
