@@ -53,6 +53,23 @@ exports.getSlots = async (req, res) => {
 
 exports.createBooking = async (req, res) => {
   try {
+    const { serviceId, date, timeSlot } = req.body;
+    
+    // Check if slot is already booked
+    const existingBooking = await Booking.findOne({
+      serviceId,
+      date,
+      timeSlot,
+      status: { $in: ['pending', 'confirmed'] }
+    });
+    
+    if (existingBooking) {
+      return res.status(409).json({ 
+        error: 'Slot already booked',
+        message: 'This time slot is no longer available. Please select a different time.'
+      });
+    }
+    
     const booking = await Booking.create(req.body);
     res.status(201).json(booking);
   } catch (err) {

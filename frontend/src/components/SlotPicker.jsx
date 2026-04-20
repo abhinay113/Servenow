@@ -35,7 +35,7 @@ export default function SlotPicker({ slots, selected, onSelect }) {
             )}
             {!available && (
               <div className="slot-unavailable-overlay">
-                <span className="unavailable-text">Booked</span>
+                <span className="unavailable-text">Unavailble</span>
               </div>
             )}
           </button>

@@ -37,7 +37,29 @@ export default function BookingPage() {
     if (!date || !id) return
     setSlotsLoading(true)
     api.get(`/slots?date=${date}&serviceId=${id}`)
-      .then(r => setSlots(r.data))
+      .then(r => {
+        const processedSlots = r.data.map(slot => {
+          // If this is today's date, block all past times
+          if (date === today()) {
+            const now = new Date()
+            const currentHour = now.getHours()
+            const currentMinute = now.getMinutes()
+            const currentTimeInMinutes = currentHour * 60 + currentMinute
+
+            // Parse slot time (assuming format "HH:MM" or similar)
+            const [slotHour, slotMinute] = slot.time.split(':').map(Number)
+            const slotTimeInMinutes = slotHour * 60 + slotMinute
+
+            // Block slot if it's in the past
+            if (slotTimeInMinutes < currentTimeInMinutes) {
+              return { ...slot, available: false }
+            }
+          }
+          return slot
+        })
+
+        setSlots(processedSlots)
+      })
       .finally(() => setSlotsLoading(false))
   }, [date, id])
 
