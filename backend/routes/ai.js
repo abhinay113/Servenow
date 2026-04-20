@@ -3,7 +3,7 @@ const router  = express.Router()
 const Anthropic = require('@anthropic-ai/sdk')
 const Service = require('../models/Service')
 
-const client = new Anthropic.default({
+const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
 })
 
