@@ -58,7 +58,7 @@ Important rules:
 - Never make up services or prices not listed above`
 
     const response = await client.messages.create({
-      model:      'claude-sonnet-4-20250514',
+      model:      'claude-3-5-sonnet-20241022',
       max_tokens: 400,
       system:     systemPrompt,
       messages:   messages.map(m => ({
@@ -71,8 +71,8 @@ Important rules:
       message: response.content[0].text
     })
   } catch (err) {
-    console.error('AI error:', err.message)
-    res.status(500).json({ error: 'AI service unavailable' })
+    console.error('AI error:', err)
+    res.status(500).json({ error: 'AI service unavailable', details: err.message })
   }
 })
 
